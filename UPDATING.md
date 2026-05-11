@@ -1,18 +1,53 @@
 # How-To Update Bindings When gtfs-realtime.proto Changes
 
-When
-[gtfs-realtime.proto](https://github.com/google/transit/blob/master/gtfs-realtime/proto/gtfs-realtime.proto)
-is updated, the various languages bindings must be regenerated, packaged, and
-deployed.
+## Regenerate the language binding source from gtfs-realtime.proto.
 
-First step is to copy the latest version of `gtfs-realtime.proto` into project.
-Then, follow the instructions in each individual UPDATING.md file for each
-language type. 
+#### One-Time Setup
 
-* [.NET](dotnet/UPDATING.md)
-* [Java](java/UPDATING.md)
-* [JavaScript / Node.js](nodejs/UPDATING.md)
-* [PHP](php/UPDATING.md)
-* [Python](python/UPDATING.md)
-* [Ruby](ruby/UPDATING.md)
-* [Golang](golang/UPDATING.md)
+1. Download and install [Docker](https://docs.docker.com/get-docker/)
+
+#### Every time node package dependencies change
+
+1. Download and install [Node.js](https://www.npmjs.com/get-npm) (check the `package.json` for `engines` version).
+
+1. Edit the dependency versions in using `npm install` and/or `npm remove`.
+
+1. Re-generate the code by following instructions below.
+
+#### Re-generating the code
+
+1. Run the following from the project root folder:
+
+    ```
+    docker build -t gtfs-nodejs -f nodejs/Dockerfile .
+    # -it to make sure docker run can be killed with ctrl-c
+    # -t uses TTY, which causes linux to include carriage returns, which are stripped using tr
+    docker run -it --rm gtfs-nodejs cat /lib/gtfs-realtime.js | tr -d '\r' > nodejs/gtfs-realtime.js
+    docker run -it --rm gtfs-nodejs cat /lib/gtfs-realtime.d.ts | tr -d '\r' > nodejs/gtfs-realtime.d.ts
+    ```
+
+1. Add the license header back to the generated source file.
+
+1. Test the generated code:
+
+    ```
+    npm run test
+    ```
+
+1. Update the version number in `package.json`.
+
+## Publishing a new release
+
+#### Every release
+
+Log in with your account on NPM that has permissions for https://www.npmjs.com/package/gtfs-realtime-bindings:
+
+```
+npm login
+```
+
+Publish the package to NPM:
+
+```
+npm publish
+```
