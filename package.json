@@ -18,8 +18,12 @@
         "buildProto": "pbjs -t static-module -w commonjs -o gtfs-realtime.js gtfs-realtime.proto && pbts -o gtfs-realtime.d.ts gtfs-realtime.js"
     },
     "dependencies": {
-        "protobufjs": "^7.1.2",
-        "protobufjs-cli": "^1.0.2"
+        "protobufjs": "^8.2.0",
+        "protobufjs-cli": "^2.2.0"
+    },
+		"devDependencies": {
+        "mocha": "^11.7.5",
+        "should": "^13.2.3"
     },
     "licenses": [
         {
